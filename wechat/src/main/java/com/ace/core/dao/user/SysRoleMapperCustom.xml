@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ace.core.dao.user.SysRoleMapperCustom">
+	<resultMap id="roleMap" type="SysRole">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="available" property="available" jdbcType="CHAR" />
+		<result column="note" jdbcType="VARCHAR" property="note" />
+		<collection property="users" javaType="java.util.List" ofType="SysUser">
+			<id column="uid" property="id" jdbcType="VARCHAR" />
+			<result column="usercode" property="usercode" jdbcType="VARCHAR" />
+			<result column="username" property="username" jdbcType="VARCHAR" />
+			<result column="password" property="password" jdbcType="VARCHAR" />
+			<result column="salt" property="salt" jdbcType="VARCHAR" />
+			<result column="locked" property="locked" jdbcType="CHAR" />
+		</collection>
+	</resultMap>
+	<!-- 根据用户ID查询出角色信息 -->
+	<select id="getRoleByUserId" parameterType="String" resultType="SysRole">
+		select * from sys_role
+		where id IN (
+		select sys_role_id from sys_user_role where sys_user_id=#{userid}
+		)
+	</select>
+	<select id="getRoleUsersInfo" resultMap="roleMap">
+		select
+		r.id,r.name,r.available,r.note,u.id AS uid,u.usercode,u.username,u.locked
+		from sys_user u ,sys_role r , sys_user_role ur where 
+		u.id=ur.sys_user_id and r.id=sys_role_id
+	</select>
+</mapper>

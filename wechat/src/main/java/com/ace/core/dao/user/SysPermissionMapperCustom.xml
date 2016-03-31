@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ace.core.dao.user.SysPermissionMapperCustom">
+	<!-- 公用sql -->
+	<sql id="idConditions">
+		AND id IN
+		(SELECT
+		sys_permission_id
+		FROM
+		sys_role_permission
+		WHERE sys_role_id IN
+		(SELECT
+		sys_role_id
+		FROM
+		sys_user_role
+		WHERE sys_user_id = #{id}))
+	</sql>
+	<sql id="roleidConditions">
+		AND id IN
+		(SELECT
+		sys_permission_id
+		FROM
+		sys_role_permission
+		WHERE sys_role_id =#{roleId})
+	</sql>
+	<!-- 根据用户id查询url -->
+	<select id="getPermissionListByUserId" parameterType="string" resultType="SysPermission">
+		SELECT
+		*
+		FROM
+		sys_permission
+		WHERE TYPE = 'permission'
+		<include refid="idConditions" />
+		order by sortstring asc
+	</select>
+
+	<!-- 根据用户id查询菜单 -->
+	<select id="getMenuListByUserId" parameterType="string" resultType="SysPermission">
+		SELECT
+		*
+		FROM
+		sys_permission
+		WHERE TYPE = 'menu'
+		<include refid="idConditions" />
+		order by sortstring asc
+	</select>
+	<!-- 根据角色信息查询角色权限url -->
+	<select id="getPermissionListByRoleId" parameterType="string" resultType="SysPermission">
+		SELECT
+		*
+		FROM
+		sys_permission
+		WHERE TYPE = 'permission'
+		<include refid="roleidConditions" />
+		order by sortstring asc
+	</select>
+	<!-- 根据角色嘻嘻你查询角色菜单 -->
+	<select id="getMenuListByRoleId" parameterType="string" resultType="SysPermission">
+		SELECT
+		*
+		FROM
+		sys_permission
+		WHERE TYPE = 'menu'
+		<include refid="roleidConditions" />
+		order by sortstring asc
+	</select>
+
+</mapper>
